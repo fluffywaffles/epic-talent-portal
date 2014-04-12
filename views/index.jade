@@ -35,12 +35,12 @@ html(ng-app='EPIC-talent-portal')
           input(ng-model='include.needsVisa', type='checkbox', checked, id='visaFilter')
           label.control-label(for='visaFilter') &nbsp;Exclude students requiring visa sponsorship?
     
-    .main.col-xs-12.col-md-9
+    .main.col-xs-12.col-sm-9
       ng-view
       
     script.
       var filters = $('.top-fix');
-      var cacheWidth = filters.width();
+      var cacheWidth = $('header').width();
       var subhead2 = $($('h2')[1]);
       
       function atElement(el, f, atbottom, reverse){
@@ -56,7 +56,7 @@ html(ng-app='EPIC-talent-portal')
         });
         
       $(window).resize(function(e) {
-        cacheWidth = filters.width();
+        cacheWidth = $('header').width();
       });
         atElement(subhead2, function() {
           filters.removeAttr('style');
