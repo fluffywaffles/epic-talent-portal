@@ -22,6 +22,9 @@ app.configure(function(){
   app.use(express.methodOverride());
   app.use(app.router);
   app.use(express.static(path.join(__dirname, 'public')));
+  app.use(express.basicAuth(function(user, pass) {
+ 		return user === 'admin' && pass === 'hippo grasses upon the hill';
+	}));
 });
 
 app.configure('development', function(){
@@ -37,7 +40,7 @@ var uristring =
 
 mongoose.connect(uristring, function(err, res) {
   if(err) console.log(err);
-  routes.importTalent();
+  //routes.importTalent();
 });
 
 app.get('/', routes.index);
