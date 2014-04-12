@@ -12,6 +12,11 @@ var express = require('express')
 
 var app = express();
 
+//HTTP authentication scheme
+var httpAuth = express.basicAuth(function(user, pass) {
+ 		return user === 'admin' && pass === 'hippo grasses upon the hill';
+	});
+
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
   app.set('views', __dirname + '/views');
@@ -22,9 +27,6 @@ app.configure(function(){
   app.use(express.methodOverride());
   app.use(app.router);
   app.use(express.static(path.join(__dirname, 'public')));
-  app.use(express.basicAuth(function(user, pass) {
- 		return user === 'admin' && pass === 'hippo grasses upon the hill';
-	}));
 });
 
 app.configure('development', function(){
@@ -43,7 +45,7 @@ mongoose.connect(uristring, function(err, res) {
   //routes.importTalent();
 });
 
-app.get('/', routes.index);
+app.get('/', httpAuth, routes.index);
 app.get('/users', user.list);
 app.get('/partials/:partial', function(req, res) {
   res.render('partials/' + req.params.partial);
