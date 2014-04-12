@@ -50,9 +50,9 @@ app.get('/users', user.list);
 app.get('/partials/:partial', function(req, res) {
   res.render('partials/' + req.params.partial);
 });
-app.get('/data', routes.loadTalent);
+app.get('/data', httpAuth, routes.loadTalent);
 app.get('/data/size', routes.dbSize);
-app.get('/data/filter', routes.filterTalent);
+app.get('/data/filter', httpAuth, routes.filterTalent);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
