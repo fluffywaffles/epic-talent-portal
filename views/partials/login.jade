@@ -1,0 +1,18 @@
+.container
+  img.logo(src='/img/EPIC-Logo-Primary-nosub.png')
+  h2.text-center Startup Career Fair
+  hr
+  h2.text-center Talent Portal
+  h3.text-center Login  
+  
+  .col-xs-12.text-center
+    p.bg-danger {{message}}
+  
+  form(ng-submit='submit()')
+    .form-group
+      label(for='email') Email:
+      input.form-control(type='text', id='email', name='username', ng-model='user.username')
+    .form-group
+      label(for='password') Password:
+      input.form-control(type='password', id='password', name='password', ng-model='user.password')
+    input.btn.btn-primary.btn-block(type='submit')

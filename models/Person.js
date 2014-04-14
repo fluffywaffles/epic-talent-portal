@@ -15,7 +15,8 @@ var person = Schema({
 	email: {type: String, required: true, index: {unique: true, dropDups: true}},
 	minorAndCerts: [String],
 	international: String,
-	needsVisa: String
+	needsVisa: String,
+	resume: Schema.Types.Mixed
 });
 
 module.exports = mongoose.model('Person', person);

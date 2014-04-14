@@ -1,0 +1,67 @@
+include header
+
+.main.col-xs-12.col-sm-9
+  h1 Edit Profile
+
+  hr
+
+  .col-xs-12
+      h3.name {{app.name ? toUpperCase(app.name) : ''}}
+      p
+      | email: {{app.email}}
+    .col-sm-12.col-xs-6
+      .col-sm-4
+        h4 Year
+        p.year {{app.year}}
+      .col-sm-4
+        h4 Major
+        p.major {{app.major}}
+      .col-sm-4
+        h4 Minor / Certificates
+        p.minor {{!! app.minorAndCerts.toString() ? app.minorAndCerts.join(', ') : "None"}}
+    .col-sm-12.col-xs-6(ng-show='isAdmin')
+      .col-sm-4
+        input(type='text', ng-model='edit.year')
+      .col-sm-4
+        input(type='text', ng-model='edit.major')
+      .col-sm-4
+        input(type='text', ng-model='edit.minorAndCerts')
+    .col-sm-12.col-xs-6
+      .col-sm-4
+        h4 Technical Skills
+        p.technical {{app.technical.join(', ')}}
+      .col-sm-4
+        h4 Design Skills
+        p.design {{app.design.join(', ')}}
+      .col-sm-4
+        h4 Business Skills
+        p.business {{app.business.join(', ')}}
+    .col-sm-12.col-xs-6(ng-show='isAdmin')
+      .col-sm-4
+        textarea(ng-model='edit.technical')
+      .col-sm-4
+        textarea(ng-model='edit.design')
+      .col-sm-4
+        textarea(ng-model='edit.business')
+    .col-sm-12.col-xs-12
+      p.international 
+        strong International student? 
+        {{app.international}}
+        input(type='checkbox', ng-model='edit.international', ng-show='isAdmin')
+      p.needsVisa 
+        strong Requires Visa Sponsorship upon graduation? 
+        {{app.needsVisa}}
+        input(type='checkbox', ng-model='edit.needsVisa', ng-show='isAdmin')
+    .col-xs-12
+      p
+        a(href='//{{app.linkedin}}', target='_blank') http://
+        input(type='text', ng-model='edit.linkedin')
+    .col-xs-12(ng-init='uploadedDoc = {}')
+      p
+        strong Resume
+        br
+        a(href='{{app.resume.url || uploadedDoc.url || "javascript:void(0)"}}') {{app.resume.filename || uploadedDoc.filename || 'None'}}
+      button.btn.btn-success.btn-block(ng-click='pickFile()') Upload Resume
+    .col-xs-12
+      br
+      button.btn.btn-danger.btn-block(ng-click='saveEdits()') Save Changes
