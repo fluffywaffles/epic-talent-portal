@@ -227,7 +227,7 @@ app.controller('edit', ["$scope", "Talent", "shared", "$http", "$routeParams", "
   
   console.log(u);
   
-  if(!u.profileId) {
+  if(! (u && u.profileId)) {
     $location.path('login');
     return;
   }
