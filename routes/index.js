@@ -11,7 +11,7 @@ var _ = require('lodash');
 var mongoose = require('mongoose');
 
 exports.index = function(req, res) {
-  if(req.isAuthenticated()) res.send(req.user);
+  if(req.isAuthenticated()) res.send(_.pick(req.user, ['profileId', 'isAdmin', 'startup']));
   res.render('index');
 };
 
