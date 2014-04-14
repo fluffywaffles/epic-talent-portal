@@ -175,6 +175,30 @@ function($scope, Talent, shared, $location, session) {
     }
   }
   
+  var filters = $('.top-fix');
+  var cacheWidth = $('header').width();
+  var subhead2 = $($('h2')[1]);
+
+  function atElement(el, f, atbottom, reverse){
+    var t = atbottom === undefined ? 0 : $(el).height();
+    var reverse = reverse === undefined ? false : true;
+    var pos = window.scrollY, off = $(el).offset().top+t;
+    if ((reverse && pos <= off) || (!reverse && pos >= off)) f();
+  }
+
+  $(window).scroll(function(e) {
+    atElement(filters, function() {
+      filters.css({position:'fixed', top:'0', width: cacheWidth});
+      });
+
+  $(window).resize(function(e) {
+    cacheWidth = $('header').width();
+  });
+    atElement(subhead2, function() {
+      filters.removeAttr('style');
+    }, 'at bottom', 'in reverse');
+  });
+  
   $scope.isAdmin = u.isAdmin;
   
   Talent.load(function(data) {

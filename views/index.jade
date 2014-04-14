@@ -20,29 +20,8 @@ html(lang='en', ng-app='EPIC-talent-portal')
       ng-view
  
     script.
-      var filters = $('.top-fix');
-      var cacheWidth = $('header').width();
-      var subhead2 = $($('h2')[1]);
-      
-      function atElement(el, f, atbottom, reverse){
-        var t = atbottom === undefined ? 0 : $(el).height();
-        var reverse = reverse === undefined ? false : true;
-        var pos = window.scrollY, off = $(el).offset().top+t;
-        if ((reverse && pos <= off) || (!reverse && pos >= off)) f();
-      }
-      
-      if(!!filters[0]) {
-        $(window).scroll(function(e) {
-          atElement(filters, function() {
-            filters.css({position:'fixed', top:'0', width: cacheWidth});
-          });
-
-        $(window).resize(function(e) {
-          cacheWidth = $('header').width();
-        });
-          atElement(subhead2, function() {
-            filters.removeAttr('style');
-          }, 'at bottom', 'in reverse');
-        });
-      }
+      setTimeout(100, function() {
+        console.log("setup");
+        
+      });
       
