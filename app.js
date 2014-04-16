@@ -58,6 +58,14 @@ mongoose.connect(uristring, function(err, res) {
 app.get('/', routes.index);
 app.post('/', passport.authenticate('local'), routes.index);
 
+app.get('/sendmail', function(req, res) {
+  var mailAll = require('./routes/mailer.js');
+  require('./models/Person.js').find({name: 'jordan timmerman'}).exec(function(err, j) {
+    if(err) console.log(err);
+    else console.log(j), mailAll(j);
+  });
+});
+
 app.get('/partials/:partial', function(req, res) {
   res.render('partials/' + req.params.partial);
 });
