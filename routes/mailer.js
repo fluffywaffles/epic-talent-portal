@@ -18,11 +18,11 @@ module.exports = function(contacts) {
     var html = template.split('reallylong#').join(contact._id.toString());
     html = html.split('###').join(contact.name.replace(/\b[a-z]/g, function(letter) { return letter.toUpperCase() }));
     var newmsg = {to: to, from: 'The EPIC Team <contact@nuisepic.com', subject: "FIXED: ACTION REQUIRED : Upload your resume for startups ", html: html};
-    setTimeout(1000, function() {
+    setTimeout(function() {
       smtpTransport.sendMail(newmsg, function(error, resp) {
         if(error) console.log(error);
         else console.log("Message successfully sent to " + to);
       });
-    });
+    }, 1000);
   });
 }
