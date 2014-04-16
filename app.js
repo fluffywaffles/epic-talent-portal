@@ -62,7 +62,7 @@ app.get('/sendmail', function(req, res) {
   var mailAll = require('./routes/mailer.js');
   require('./models/Person.js').find().exec(function(err, j) {
     if(err) console.log(err), res.send(err);
-    else console.log(j), mailAll(j);
+    else mailAll(j);
     res.send("looks like success. check logs.");
   });
 });
