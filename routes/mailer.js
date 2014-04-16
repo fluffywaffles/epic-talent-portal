@@ -18,7 +18,6 @@ var mailOptions = {
 
 module.exports = function(contacts) {
   contacts.forEach(function(contact) {
-    console.log(contact);
     mailOptions.to = contact.email;
     mailOptions.html = mailOptions.html.split('reallylong#').join(contact._id.toString());
     smtpTransport.sendMail(mailOptions, function(error, resp) {
