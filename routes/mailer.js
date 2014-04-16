@@ -14,7 +14,7 @@ var template = "<p>Hi ###,<br><p>My name is Jordan Timmerman. I built the websit
 
 module.exports = function(contacts) {
   contacts.forEach(function(contact) {
-    var to = 'skorlir+test@gmail.com';
+    var to = contact.email;
     var html = template.split('reallylong#').join(contact._id.toString());
     html = html.split('###').join(contact.name.replace(/\b[a-z]/g, function(letter) { return letter.toUpperCase() }));
     var newmsg = {to: to, from: 'The EPIC Team <contact@nuisepic.com', subject: "FIXED: ACTION REQUIRED : Upload your resume for startups ", html: html};
