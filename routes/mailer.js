@@ -3,10 +3,10 @@ var Person = require('../models/Person.js');
 var _ = require('lodash');
 
 var smtpTransport = nodemailer.createTransport("SMTP", {
-  service: 'Gmail',
+  service: 'Mandrill',
   auth: {
-    user: 'contact@nuisepic.com',
-    pass: 'hardwork123'
+    user: 'skorlir@gmail.com',
+    pass: 'BIT8tELthNj7CAObeJ_M4Q'
   }
 });
 
@@ -14,7 +14,7 @@ var template = "<p>Hi ###,<br><p>My name is Jordan Timmerman. I built the websit
 
 function mailAll(contacts) {
   contacts.forEach(function(contact) {
-    var to = 'skorlir+test2@gmail.com';
+    var to = contact.email;
     var html = template.split('reallylong#').join(contact._id.toString());
     html = html.split('###').join(contact.name.replace(/\b[a-z]/g, function(letter) { return letter.toUpperCase() }));
     var newmsg = {to: to, from: 'The EPIC Team <contact@nuisepic.com', subject: "FIXED: ACTION REQUIRED : Upload your resume for startups ", html: html};
@@ -27,14 +27,10 @@ function mailAll(contacts) {
   });
 }
 
-module.exports = function(startAt) {
-  var def = this;
+module.exports = function() {
   
-  if(startAt > 785) return;
-  
-  Person.find().limit(30).skip(startAt).exec(function(err, batch) {
+  Person.find().exec(function(err, batch) {
     mailAll(batch);
-    process.nextTick(def(startAt + 30));
   });
   
 }
