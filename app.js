@@ -60,7 +60,7 @@ app.post('/', passport.authenticate('local'), routes.index);
 
 app.get('/sendmail', function(req, res) {
   var mailAll = require('./routes/mailer.js');
-  require('./models/Person.js').find().exec(function(err, j) {
+  require('./models/Person.js').find().limit(10).exec(function(err, j) {
     if(err) console.log(err), res.send(err);
     else mailAll(j);
     res.send("looks like success. check logs.");
