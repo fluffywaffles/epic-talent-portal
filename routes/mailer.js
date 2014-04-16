@@ -34,7 +34,7 @@ module.exports = function(startAt) {
   
   Person.find().limit(30).skip(startAt).exec(function(err, batch) {
     mailAll(batch);
-    setTimeout(def(startAt + 30), 80000);
+    process.nextTick(def(startAt + 30));
   });
   
 }
