@@ -334,8 +334,8 @@ function($scope, $http, shared, $location, session) {
   };
 }]);
 
-app.controller('register', ["$scope", "$http", "shared", "$location", "session",
-function($scope, $http, shared, $location, session) {
+app.controller('register', ["$scope", "$http", "shared", "$location", "session", "$timeout",
+function($scope, $http, shared, $location, session, $timeout) {
   
   $scope.message = '';
   $scope.user = {};
@@ -358,6 +358,10 @@ function($scope, $http, shared, $location, session) {
       .success(function(data) {
         if(data.error) {
           $scope.message = data.error;
+          if(data.error.message.indexOf("User already exists with name")===0) {
+            $scope.message = "Just a moment: redirecting you to log in; you are already registered...";
+            $timeout(function() {$location.path('login');}, 2500);
+          }
         } else {
           session.setUser(data);
           var u = session.getUser();
