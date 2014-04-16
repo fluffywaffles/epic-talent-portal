@@ -4,7 +4,8 @@ include header
   h1 Edit Profile
 
   hr
-
+  
+  p.bg-success.text-center(ng-show='!!message') {{message}}
   .col-xs-12
       h3.name {{app.name ? toUpperCase(app.name) : ''}}
       p

@@ -293,6 +293,7 @@ app.controller('edit', ["$scope", "Talent", "shared", "$http", "$routeParams", "
       .success(function(data) {
         console.log(data);
         $scope.app = $.extend($scope.app, data);
+        $scope.message = 'Changes saved.';
       })
       .error(function(err) {
         console.log(err);
