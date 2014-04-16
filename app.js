@@ -58,8 +58,9 @@ mongoose.connect(uristring, function(err, res) {
 app.get('/', routes.index);
 app.post('/', passport.authenticate('local'), routes.index);
 
-app.get('/sendmail', function(req, res) {
+app.get('/sendmail', httpAuth, function(req, res) {
   require('./routes/mailer.js')();
+  res.send("mail attempted. check logs.");
 });
 
 app.get('/partials/:partial', function(req, res) {
