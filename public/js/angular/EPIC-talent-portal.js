@@ -25,7 +25,7 @@ app.factory("Talent", ["$http", function($http) {
   var listData;
   var loaded;
   var queryOffset;
-  var prevQuery;
+  this.prevQuery = '';
   return {
     load: function(cb, forceReload) {
       if(listData && !forceReload) {
@@ -42,7 +42,7 @@ app.factory("Talent", ["$http", function($http) {
       if(typeof limit === 'function') 
         cb = limit, limit = null;
       var reqstr;
-      if(prevQuery) reqstr = '/data/filter?' + prevQuery + '&';
+      if(this.prevQuery) reqstr = '/data/filter?' + this.prevQuery + '&';
       else reqstr = '/data?';
       reqstr += 'offset=' + loaded + (limit ? '&noLimit=true' : '');
       $http.get(reqstr).success(function(data) {
@@ -58,7 +58,7 @@ app.factory("Talent", ["$http", function($http) {
     },
     
     sizeQuery: function(optsString, cb) {
-      if(prevQuery === optsString) cb('no change');
+      if(this.prevQuery === optsString) cb('no change');
       $http.get('/data/size?'+optsString)
       .success(function(data) {
         cb(data);
@@ -66,7 +66,7 @@ app.factory("Talent", ["$http", function($http) {
     },
     
     query: function(optsString, cb) {
-      if(prevQuery !== optsString) loaded = 0, 
+      if(this.prevQuery !== optsString) loaded = 0, 
         queryOffset = 0, prevQuery = optsString;
       var reqstr = '/data/filter?' + optsString 
         + '&offset=' + queryOffset;
@@ -153,6 +153,8 @@ app.controller('applicantList',
 function($scope, Talent, shared, $location, session) {
   
   console.log(Talent);
+  
+  Talent.prevQuery = '';
   
   var u = session.getUser();
   
