@@ -12,7 +12,7 @@ var mongoose = require('mongoose');
 
 exports.index = function(req, res) {
   if(req.isAuthenticated()) res.send(_.pick(req.user, ['profileId', 'isAdmin', 'startup']));
-  res.render('index');
+  else res.render('index');
 };
 
 exports.importTalent = function(req, res) {
@@ -45,9 +45,9 @@ exports.importTalent = function(req, res) {
 };
 
 exports.loadTalent = function(req, res) {
-  
+  if(!req.isAuthenticated()) res.status(401).send('Sorry, you are not authorized to go there.');
   var lim = 25;
-  
+
   if(req.query.noLimit)
     lim = 0;
   Person.find({}).skip(req.query.offset).limit(lim).sort([['name', 'ascending']]).exec(function(err, peeps) {
