@@ -17,8 +17,8 @@ function router($routeProvider) {
   });
 }
 
-var app = angular.module('EPIC-talent-portal', 
-                         ['ngRoute', 'ui.bootstrap'], 
+var app = angular.module('EPIC-talent-portal',
+                         ['ngRoute', 'ui.bootstrap'],
                          router);
 
 app.factory("Talent", ["$http", function($http) {
@@ -37,9 +37,9 @@ app.factory("Talent", ["$http", function($http) {
         cb(listData);
       });
     },
-    
+
     next: function(limit, cb) {
-      if(typeof limit === 'function') 
+      if(typeof limit === 'function')
         cb = limit, limit = null;
       var reqstr;
       if(this.prevQuery) reqstr = '/data/filter?' + this.prevQuery + '&';
@@ -50,13 +50,13 @@ app.factory("Talent", ["$http", function($http) {
         cb(data);
       });
     },
-    
+
     dbSize: function(cb) {
       $http.get('/data/size').success(function(data) {
         cb(data);
       });
     },
-    
+
     sizeQuery: function(optsString, cb) {
       if(this.prevQuery === optsString) cb('no change');
       $http.get('/data/size?'+optsString)
@@ -64,11 +64,11 @@ app.factory("Talent", ["$http", function($http) {
         cb(data);
       });
     },
-    
+
     query: function(optsString, cb) {
-      if(this.prevQuery !== optsString) loaded = 0, 
+      if(this.prevQuery !== optsString) loaded = 0,
         queryOffset = 0, prevQuery = optsString;
-      var reqstr = '/data/filter?' + optsString 
+      var reqstr = '/data/filter?' + optsString
         + '&offset=' + queryOffset;
       $http.get(reqstr).success(function(data) {
         loaded = data.length;
@@ -80,7 +80,7 @@ app.factory("Talent", ["$http", function($http) {
 
 app.service('shared', ["Talent", function(Talent) {
   var queryArr;
-  
+
   this.queryStringify = function(queryObj) {
     queryArr = [];
     $.each(queryObj, function(key, value) {
@@ -88,20 +88,20 @@ app.service('shared', ["Talent", function(Talent) {
     });
     return queryArr.join('&');
   };
-  
+
   this.filterInclude = function(actual, expected) {
     if(expected) return actual === 'No';
     return actual;
   };
-  
-  this.nextPage = function(next) { 
+
+  this.nextPage = function(next) {
     return function() {
       Talent.next(function(data) {
         next(data);
       });
     }
   };
-  
+
   this.loadAll = function(next) {
     return function() {
       Talent.next('load all', function(data) {
@@ -110,20 +110,20 @@ app.service('shared', ["Talent", function(Talent) {
       });
     }
   };
-  
+
   this.toUpperCase = function(str) {
-    return str.replace(/\w\S*/g, 
+    return str.replace(/\w\S*/g,
       function(txt){
-        return txt.charAt(0).toUpperCase() + 
+        return txt.charAt(0).toUpperCase() +
         txt.substr(1).toLowerCase();});
   };
-  
+
   this.dbSize = function(next) {
     Talent.dbSize(function(data) {
       next(data);
     });
   };
-  
+
   this.query = function(paramses, next) {
     Talent.query(this.queryStringify(paramses), function(data) {
       next(data);
@@ -133,33 +133,33 @@ app.service('shared', ["Talent", function(Talent) {
 
 app.service('session', function() {
   this.user;
-  
+
   this.setUser = function(userObj) {
     this.user = angular.copy(userObj);
   };
-    
+
   this.getUser = function() {
     return this.user;
   };
-    
+
   this.clear = function() {
     this.user = undefined;
   };
 
 });
 
-app.controller('applicantList', 
-               ["$scope", "Talent", "shared", "$location", 'session', 
+app.controller('applicantList',
+               ["$scope", "Talent", "shared", "$location", 'session',
 function($scope, Talent, shared, $location, session) {
-  
+
   console.log(Talent);
-  
+
   Talent.prevQuery = '';
-  
+
   var u = session.getUser();
-  
+
   console.log(u);
-  
+
   if(! u) {
     $location.path('login');
     return;
@@ -169,14 +169,14 @@ function($scope, Talent, shared, $location, session) {
     $location.path('edit/'+u.profileId);
     return;
   }
-  
+
   if(u.isAdmin) {
     $scope.editPage = function(id) {
       console.log('EDIT ' + id);
-      $location.path('edit/'+id); 
+      $location.path('edit/'+id);
     }
   }
-  
+
   var filters = $('.top-fix');
   var cacheWidth = $('header').width();
   var subhead2 = $($('h2')[1]);
@@ -200,30 +200,30 @@ function($scope, Talent, shared, $location, session) {
       filters.removeAttr('style');
     }, 'at bottom', 'in reverse');
   });
-  
+
   $scope.isAdmin = u.isAdmin;
-  
+
   Talent.load(function(data) {
-    
+
     $scope.apps = data;
-    
+
     $scope.loadedApps = true;
-    
+
     $scope.nextPage = shared.nextPage(function(data) {
       $scope.apps = $scope.apps.concat(data);
     });
     $scope.loadAll = shared.loadAll(function(data) {
       $scope.apps = $scope.apps.concat(data);
     });
-    
+
     $scope.filterInclude = shared.filterInclude;
     $scope.toUpperCase = shared.toUpperCase;
-    
+
     shared.dbSize(function(data) {
       console.log(data);
       $scope.dbSize = data;
     });
-    
+
     $scope.$watchCollection('search', function(searchObj) {
       if(!$.isEmptyObject(searchObj)) {
         Talent.sizeQuery(shared.queryStringify(searchObj), function(data) {
@@ -239,7 +239,7 @@ function($scope, Talent, shared, $location, session) {
               $scope.apps = $scope.apps.concat(data);
             });
           }
-        });        
+        });
       }
     });
   });
@@ -248,20 +248,20 @@ function($scope, Talent, shared, $location, session) {
 app.controller('edit', ["$scope", "Talent", "shared", "$http", "$routeParams", "$location", "session", function($scope, Talent, shared, $http, $params, $location, session) {
   $scope.app = {};
   $scope.edit = {};
-  
+
   var u = session.getUser();
-  
+
   console.log(u);
-  
+
   if(! (u && u.profileId)) {
     $location.path('login');
     return;
   }
-  
+
   $scope.isAdmin = u.isAdmin;
-  
+
   filepicker.setKey('AdPx67v2iQvSqF5yb82VUz');
-  
+
   $scope.pickFile = function() {
     filepicker.pick({
       mimetypes: ['text/plain', 'text/richtext', 'application/pdf', 'text/pdf'],
@@ -279,18 +279,18 @@ app.controller('edit', ["$scope", "Talent", "shared", "$http", "$routeParams", "
       console.log(FPError.toString());
     });
   };
-  
+
   $scope.toUpperCase = shared.toUpperCase;
-  
+
   shared.query({_id: $params.uid}, function(data) {
     $scope.app = data[0];
     $scope.edit = angular.copy($scope.app);
     delete $scope.edit._id;
   });
-  
+
   $scope.saveEdits = function() {
     if(u.profileId === $params.uid || u.isAdmin) {
-      $http.post('/users/update', 
+      $http.post('/users/update',
                  {_id: $params.uid, updates: $scope.edit})
       .success(function(data) {
         console.log(data);
@@ -302,18 +302,18 @@ app.controller('edit', ["$scope", "Talent", "shared", "$http", "$routeParams", "
       });
     }
   }
-  
+
 }]);
 
 app.controller('login', ["$scope", "$http", "shared", "$location", "session",
 function($scope, $http, shared, $location, session) {
-  
+
   $scope.message = '';
-  
+
   $scope.submit = function() {
     $scope.message = 'Logging you in...';
     if (! ($scope.user.username && $scope.user.password)) {
-      $scope.message = 'Error: please input a username and password.'; 
+      $scope.message = 'Error: please input a username and password.';
       return;
     }
     console.log($scope.user);
@@ -326,7 +326,7 @@ function($scope, $http, shared, $location, session) {
         $location.path('list');
       }
       else {
-        $location.path('edit/'+u.profileId);
+        $location.path('list');
       }
     })
     .error(function(error) {
@@ -338,18 +338,18 @@ function($scope, $http, shared, $location, session) {
 
 app.controller('register', ["$scope", "$http", "shared", "$location", "session", "$timeout",
 function($scope, $http, shared, $location, session, $timeout) {
-  
+
   $scope.message = '';
   $scope.user = {};
-  
+
   if(! ($scope.req && $scope.req.email))
     $scope.message = "Bad ID. No account can be created for this URL. If you copied this URL from a link, please double check its accuracy.";
-  
+
   else {
     $scope.user.username = $scope.req.email;
     $scope.user.special = $scope.req.special;
     $scope.user.startup = $scope.req.startup;
-  
+
     $scope.submit = function() {
       $scope.message = 'Registering...';
       if (!$scope.user.password) {

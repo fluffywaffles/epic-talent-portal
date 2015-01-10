@@ -23,18 +23,19 @@ exports.importTalent = function(req, res) {
       if(v.indexOf(',') !== -1) v = v.split(',').map(function(val, idx) { return val.trim()});
       val[i] = v;
     });
-    
+
     var person = new Person(val);
     person.save(function(err) {
       if(err) console.log(err);
     });
   });
-  
+
   Editor.register({username: 'tester', startup: true}, 'testme!', function(err) {
     if(err) console.log(err);
   });
-  
+
   Person.findOne({name: 'jordan timmerman'}).exec(function(err, jordan) {
+    console.log(jordan);
     Editor.register({username: 'jtim-admin', isAdmin: true, profileId: jordan._id}, 'br0,lemme1n', function(err) {
       if(err) console.log(err);
     });
@@ -60,8 +61,8 @@ exports.dbSize = function(req, res) {
     var mc;
     if(req.query.minorAndCerts) mc =  req.query.minorAndCerts.split(',').join('|');
     Person.count({
-      name: new RegExp(req.query.name, 'i'), 
-      major: new RegExp(req.query.major, 'i'), 
+      name: new RegExp(req.query.name, 'i'),
+      major: new RegExp(req.query.major, 'i'),
       minorAndCerts: new RegExp(mc, 'i')
     }, function(err, num) {
       res.send(num.toString());
@@ -77,24 +78,24 @@ exports.dbSize = function(req, res) {
 }
 
 exports.filterTalent = function(req, res) {
-  
+
   var lim = 25;
   if(req.query.noLimit) lim = 0;
-  
+
   var mc;
   if(req.query.minorAndCerts) mc =  req.query.minorAndCerts.split(',').join('|');
-  
-  var q = { 
-    name: new RegExp(req.query.name, 'i'), 
-    major: new RegExp(req.query.major, 'i'), 
-    minorAndCerts: new RegExp(mc, 'i') 
+
+  var q = {
+    name: new RegExp(req.query.name, 'i'),
+    major: new RegExp(req.query.major, 'i'),
+    minorAndCerts: new RegExp(mc, 'i')
   };
-  
+
   if(req.query._id)
     q._id = mongoose.Types.ObjectId(req.query._id);
-  
+
   console.log(q);
-  
+
   Person.find(q)
   .skip(req.query.offset).limit(lim)
   .exec(function(err, peeps) {
