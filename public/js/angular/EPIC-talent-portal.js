@@ -330,7 +330,7 @@ function($scope, $http, shared, $location, session) {
   var u = session.getUser();
 
   if (u) {
-    $location.path('list');
+    $location.url($location.path('list'));
   }
 
   $scope.submit = function() {
@@ -343,7 +343,10 @@ function($scope, $http, shared, $location, session) {
     .success(function(data) {
       session.setUser(data);
       var u = session.getUser();
-      $location.path('list');
+      if(u.startup)
+        $location.url('list');
+      else
+        $location.url('edit/' + u.profileId);
     })
     .error(function(error) {
       console.log(error);
@@ -385,11 +388,10 @@ function($scope, $http, shared, $location, session, $timeout) {
           var u = session.getUser();
           console.log(session);
           if(u.startup) {
-            //had a problem where setting href on $window caused service session to reinitialize. That's because changing the url resets the app - just change the path and all's good.
-            $location.path('list');
+            $location.url('list');
           }
           else {
-            $location.path('edit/'+u.profileId);
+            $location.url('edit/'+u.profileId);
           }
         }
       })
