@@ -4,7 +4,7 @@ include header
   h1 Edit Profile
 
   hr
-  
+
   p.bg-success.text-center(ng-show='!!message') {{message}}
   .col-xs-12
       h3.name {{app.name ? toUpperCase(app.name) : ''}}
@@ -17,46 +17,20 @@ include header
       .col-sm-4
         h4 Major
         p.major {{app.major}}
-      .col-sm-4
-        h4 Minor / Certificates
-        p.minor {{!! app.minorAndCerts.toString() ? app.minorAndCerts.join(', ') : "None"}}
     .col-sm-12.col-xs-6(ng-show='isAdmin')
       .col-sm-4
         input(type='text', ng-model='edit.year')
       .col-sm-4
         input(type='text', ng-model='edit.major')
-      .col-sm-4
-        input(type='text', ng-model='edit.minorAndCerts')
-    .col-sm-12.col-xs-6
-      .col-sm-4
-        h4 Technical Skills
-        p.technical {{app.technical.join(', ')}}
-      .col-sm-4
-        h4 Design Skills
-        p.design {{app.design.join(', ')}}
-      .col-sm-4
-        h4 Business Skills
-        p.business {{app.business.join(', ')}}
-    .col-sm-12.col-xs-6(ng-show='isAdmin')
-      .col-sm-4
-        textarea(ng-model='edit.technical')
-      .col-sm-4
-        textarea(ng-model='edit.design')
-      .col-sm-4
-        textarea(ng-model='edit.business')
     .col-sm-12.col-xs-12
-      p.international 
-        strong International student? 
+      p.international
+        strong International student?
         {{app.international}}
         input(type='checkbox', ng-model='edit.international', ng-show='isAdmin')
-      p.needsVisa 
-        strong Requires Visa Sponsorship upon graduation? 
+      p.needsVisa
+        strong Requires Visa Sponsorship upon graduation?
         {{app.needsVisa}}
         input(type='checkbox', ng-model='edit.needsVisa', ng-show='isAdmin')
-    .col-xs-12
-      p
-        a(href='//{{app.linkedin}}', target='_blank') http://
-        input(type='text', ng-model='edit.linkedin')
     .col-xs-12(ng-init='uploadedDoc = {}')
       p
         strong Resume

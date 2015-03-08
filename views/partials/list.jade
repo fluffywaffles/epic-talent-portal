@@ -1,6 +1,6 @@
 include header
 
-.main.col-xs-12.col-sm-9
+.main.col-xs-12.col-sm-8.col-md-9
   div(ng-hide='loadedApps')
     p Loading...
 
@@ -12,23 +12,23 @@ include header
     //name, year, major, industries, technical, design, business, engineering, linkedin, email, minorAndCerts, international, needsVisa
     .col-xs-12
       h3.name {{toUpperCase(app.raw.name.first)}} {{toUpperCase(app.raw.name.last)}}
+        small &nbsp;&nbsp;
+          a(href='mailto:{{app.raw.email}}'){{app.raw.email}}
       h3(ng-show='isAdmin') | {{app._id}}
+      hr
       button.btn.btn-warning.pull-right(ng-click='editPage(app._id)', ng-show='isAdmin') Edit
-    .col-sm-12.col-xs-6
-      .col-sm-3
+    .col-xs-12.col-md-6
+      .col-xs-6
         h4 Year
         p.year {{app.raw.year == "other" ? app.raw.yearOtherExplanation : app.raw.year}}
-      .col-sm-3
+      .col-xs-6
         h4 Major
         p.major {{app.raw.major | camelToHuman}}
-    .col-sm-12.col-xs-12
+    .col-xs-12.col-sm-6
       p.international
         strong International student?
         &nbsp;{{app.raw.international ? "Yes" : "No"}}
-    .col-sm-12.col-xs-12
-      p
-        a(href='mailto:{{app.raw.email}}') {{app.raw.email}}
-    .col-xs-12(ng-show='{{!!app.raw.resume}}')
+    .col-xs-12.col-sm-6(ng-show='{{!!app.raw.resume}}')
       p
         strong Resume
         br
