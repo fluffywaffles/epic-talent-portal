@@ -16,7 +16,7 @@ exports.getSet = function(req, res) {
     var params = {};
     if(req.query.special === '90210ggbro1337') params.special = req.query.special;
     if(req.query.special === 'reg_startup22619') params.startup = req.query.special;
-    
+ 
     Person.findById(req.query.id).exec(function(err, person) {
       if(err) console.log(err), res.send(err);
       else {

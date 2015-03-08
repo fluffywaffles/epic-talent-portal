@@ -11,9 +11,19 @@ var _ = require('lodash');
 var mongoose = require('mongoose');
 
 exports.index = function(req, res) {
-  if(req.isAuthenticated()) res.send(_.pick(req.user, ['profileId', 'isAdmin', 'startup']));
-  else res.render('index');
+  res.render('index');
 };
+
+exports.login = function(req, res) {
+  if(req.isAuthenticated()) res.send(_.pick(req.user, ['profileId', 'isAdmin', 'startup']));
+  else res.status(401).send('Login failed.');
+}
+
+exports.checkLogin = function(req, res) {
+  console.log('CheckLogin', req.isAuthenticated());
+  if(req.isAuthenticated()) res.send(_.pick(req.user, ['profileId', 'isAdmin', 'startup']));
+  else res.status(401).send('Not logged in.');
+}
 
 exports.importTalent = function(req, res) {
   var talent = fs.readFileSync(path.join(__dirname, '../raw_csv/student-apps.json'));
@@ -54,7 +64,7 @@ exports.loadTalent = function(req, res) {
   Person.find({}).skip(req.query.offset).limit(lim).sort([['name', 'ascending']]).exec(function(err, peeps) {
       res.send(peeps);
     });
-  };
+};
 
 exports.dbSize = function(req, res) {
   if(req.query) {

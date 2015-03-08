@@ -17,11 +17,11 @@ var app = express();
 
 //HTTP authentication scheme
 var httpAuth = express.basicAuth(function(user, pass) {
- 		return user === 'admin' && pass === 'hippo grasses upon the hill';
-	});
+     return user === 'admin' && pass === 'hippo grasses upon the hill';
+  });
 
 app.configure(function(){
-  app.set('port', process.env.PORT || 3000);
+  app.set('port', process.env.PORT || 3333);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.favicon());
@@ -48,9 +48,9 @@ passport.deserializeUser(Editor.deserializeUser());
 // connect to db
 // for local to work, mongod (mongodaemon) must be running on port 27017
 var uristring =
-	process.env.MONGOLAB_URI ||
-	process.env.MONGOHQ_URL  ||
-	'mongodb://localhost/talentPool';
+  process.env.MONGOLAB_URI ||
+  process.env.MONGOHQ_URL  ||
+  'mongodb://localhost/talentPool';
 
 mongoose.connect(uristring, function(err, res) {
   if(err) console.log(err);
@@ -58,7 +58,8 @@ mongoose.connect(uristring, function(err, res) {
 });
 
 app.get('/', routes.index);
-app.post('/', passport.authenticate('local'), routes.index);
+app.post('/login', passport.authenticate('local'), routes.login);
+app.get('/checkLogin', routes.checkLogin);
 
 app.get('/sendmail', httpAuth, function(req, res) {
   require('./routes/mailer.js')();

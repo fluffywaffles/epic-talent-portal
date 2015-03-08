@@ -1,5 +1,5 @@
 var mongoose = require('mongoose')
-		, Schema = mongoose.Schema;
+  , Schema = mongoose.Schema;
 
 //name, year, major, industries, technical, design, business, engineering, linkedin, email, minorAndCerts, international, needsVisa
 

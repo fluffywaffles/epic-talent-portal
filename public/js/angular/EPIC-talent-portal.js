@@ -59,7 +59,7 @@ app.factory("Talent", ["$http", function($http) {
 
     sizeQuery: function(optsString, cb) {
       if(this.prevQuery === optsString) cb('no change');
-      $http.get('/data/size?'+optsString)
+      $http.get('/data/size?' + optsString)
       .success(function(data) {
         cb(data);
       });
@@ -131,8 +131,10 @@ app.service('shared', ["Talent", function(Talent) {
   };
 }]);
 
-app.service('session', function() {
+app.service('session', ['$http', function($http) {
   this.user;
+
+  var self = this;
 
   this.setUser = function(userObj) {
     this.user = angular.copy(userObj);
@@ -146,7 +148,18 @@ app.service('session', function() {
     this.user = undefined;
   };
 
-});
+  this.checkLogin = function(cb) {
+    $http.get('/checkLogin')
+    .success(function(userData) {
+      self.setUser(userData);
+      cb();
+    })
+    .error(function() {
+      console.log('not logged in; sorry');
+      cb();
+    })
+  }
+}]);
 
 app.controller('applicantList',
                ["$scope", "Talent", "shared", "$location", 'session',
@@ -156,91 +169,95 @@ function($scope, Talent, shared, $location, session) {
 
   Talent.prevQuery = '';
 
-  var u = session.getUser();
+  session.checkLogin(function () {
 
-  console.log(u);
+    var u = session.getUser();
 
-  if(! u) {
-    $location.path('login');
-    return;
-  }
-  if (! (u.isAdmin || u.startup)) {
-    alert("Forbidden.");
-    $location.path('edit/'+u.profileId);
-    return;
-  }
+    console.log(u);
 
-  if(u.isAdmin) {
-    $scope.editPage = function(id) {
-      console.log('EDIT ' + id);
-      $location.path('edit/'+id);
+    if(! u) {
+      $location.path('login');
+      return;
     }
-  }
+    if (! (u.isAdmin || u.startup)) {
+      alert("Forbidden.");
+      $location.path('edit/'+u.profileId);
+      return;
+    }
 
-  var filters = $('.top-fix');
-  var cacheWidth = $('header').width();
-  var subhead2 = $($('h2')[1]);
+    if(u.isAdmin) {
+      $scope.editPage = function(id) {
+        console.log('EDIT ' + id);
+        $location.path('edit/'+id);
+      }
+    }
 
-  function atElement(el, f, atbottom, reverse){
-    var t = atbottom === undefined ? 0 : $(el).height();
-    var reverse = reverse === undefined ? false : true;
-    var pos = window.scrollY, off = $(el).offset().top+t;
-    if ((reverse && pos <= off) || (!reverse && pos >= off)) f();
-  }
+    var filters = $('.top-fix');
+    var cacheWidth = $('header').width();
+    var subhead2 = $($('h2')[1]);
 
-  $(window).scroll(function(e) {
-    atElement(filters, function() {
-      filters.css({position:'fixed', top:'0', width: cacheWidth});
+    function atElement(el, f, atbottom, reverse){
+      var t = atbottom === undefined ? 0 : $(el).height();
+      var reverse = reverse === undefined ? false : true;
+      var pos = window.scrollY, off = $(el).offset().top+t;
+      if ((reverse && pos <= off) || (!reverse && pos >= off)) f();
+    }
+
+    $(window).scroll(function(e) {
+      atElement(filters, function() {
+        filters.css({position:'fixed', top:'0', width: cacheWidth});
+        });
+
+      $(window).resize(function(e) {
+        cacheWidth = $('header').width();
       });
 
-  $(window).resize(function(e) {
-    cacheWidth = $('header').width();
-  });
-    atElement(subhead2, function() {
-      filters.removeAttr('style');
-    }, 'at bottom', 'in reverse');
-  });
-
-  $scope.isAdmin = u.isAdmin;
-
-  Talent.load(function(data) {
-
-    $scope.apps = data;
-
-    $scope.loadedApps = true;
-
-    $scope.nextPage = shared.nextPage(function(data) {
-      $scope.apps = $scope.apps.concat(data);
-    });
-    $scope.loadAll = shared.loadAll(function(data) {
-      $scope.apps = $scope.apps.concat(data);
+      atElement(subhead2, function() {
+        filters.removeAttr('style');
+      }, 'at bottom', 'in reverse');
     });
 
-    $scope.filterInclude = shared.filterInclude;
-    $scope.toUpperCase = shared.toUpperCase;
+    $scope.isAdmin = u.isAdmin;
 
-    shared.dbSize(function(data) {
-      console.log(data);
-      $scope.dbSize = data;
-    });
+    Talent.load(function(data) {
 
-    $scope.$watchCollection('search', function(searchObj) {
-      if(!$.isEmptyObject(searchObj)) {
-        Talent.sizeQuery(shared.queryStringify(searchObj), function(data) {
-          if(data !== 'no change') {
-            console.log(data);
-            $scope.dbSize = data;
-            shared.query(searchObj, function(data) {
-              $scope.apps = data;
-            });
-          }
-          else {
-            shared.query(searchObj, function(data) {
-              $scope.apps = $scope.apps.concat(data);
-            });
-          }
-        });
-      }
+      $scope.apps = data;
+
+      $scope.loadedApps = true;
+
+      $scope.nextPage = shared.nextPage(function(data) {
+        $scope.apps = $scope.apps.concat(data);
+      });
+      $scope.loadAll = shared.loadAll(function(data) {
+        $scope.apps = $scope.apps.concat(data);
+      });
+
+      $scope.filterInclude = shared.filterInclude;
+      $scope.toUpperCase = shared.toUpperCase;
+
+      shared.dbSize(function(data) {
+        console.log(data);
+        $scope.dbSize = data;
+      });
+
+      $scope.$watchCollection('search', function(searchObj) {
+        if(!$.isEmptyObject(searchObj)) {
+          Talent.sizeQuery(shared.queryStringify(searchObj), function(data) {
+            if(data !== 'no change') {
+              console.log(data);
+              $scope.dbSize = data;
+              shared.query(searchObj, function(data) {
+                $scope.apps = data;
+              });
+            }
+            else {
+              shared.query(searchObj, function(data) {
+                $scope.apps = $scope.apps.concat(data);
+              });
+            }
+          });
+        }
+      });
     });
   });
 }]);
@@ -310,6 +327,14 @@ function($scope, $http, shared, $location, session) {
 
   $scope.message = '';
 
+  session.checkLogin();
+
+  var u = session.getUser();
+
+  if (u) {
+    $location.path('list');
+  }
+
   $scope.submit = function() {
     $scope.message = 'Logging you in...';
     if (! ($scope.user.username && $scope.user.password)) {
@@ -317,17 +342,12 @@ function($scope, $http, shared, $location, session) {
       return;
     }
     console.log($scope.user);
-    $http.post('/', $scope.user)
+    $http.post('/login', $scope.user)
     .success(function(data) {
       console.log(data);
       session.setUser(data);
       var u = session.getUser();
-      if(u.startup) {
-        $location.path('list');
-      }
-      else {
-        $location.path('list');
-      }
+      $location.path('list');
     })
     .error(function(error) {
       console.log(error);

@@ -1,6 +1,6 @@
 var mongoose = require('mongoose')
-		, Schema = mongoose.Schema
-		, passportLocalMongoose = require('passport-local-mongoose');
+    , Schema = mongoose.Schema
+    , passportLocalMongoose = require('passport-local-mongoose');
 
 var editor = new Schema({
   isAdmin: {type: Boolean, required: true, default: false},
