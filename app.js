@@ -60,6 +60,10 @@ mongoose.connect(uristring, function(err, res) {
 app.get('/', routes.index);
 app.post('/login', passport.authenticate('local'), routes.login);
 app.get('/checkLogin', routes.checkLogin);
+app.get('/logout', function(req, res) {
+  req.logout();
+  res.redirect('/#/login?loggedout=true');
+});
 
 app.get('/sendmail', httpAuth, function(req, res) {
   require('./routes/mailer.js')();

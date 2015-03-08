@@ -321,7 +321,9 @@ app.controller('edit', ["$scope", "Talent", "shared", "$http", "$routeParams", "
 app.controller('login', ["$scope", "$http", "shared", "$location", "session",
 function($scope, $http, shared, $location, session) {
 
-  $scope.message = '';
+  $location.search().loggedout
+    ? $scope.message = 'Successfully logged out.'
+    : $scope.message = '';
 
   session.checkLogin();
 
