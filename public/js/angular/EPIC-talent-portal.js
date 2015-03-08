@@ -295,6 +295,7 @@ app.controller('edit', ["$scope", "Talent", "shared", "$http", "$routeParams", "
 
   $scope.toUpperCase = shared.toUpperCase;
 
+  // TODO(jordan): query no longer means Person.find, so this needs updating
   shared.query({_id: $params.uid}, function(data) {
     $scope.app = data[0];
     $scope.edit = angular.copy($scope.app);
@@ -303,6 +304,7 @@ app.controller('edit', ["$scope", "Talent", "shared", "$http", "$routeParams", "
 
   $scope.saveEdits = function() {
     if(u.profileId === $params.uid || u.isAdmin) {
+      // TODO(jordan): this route will change too
       $http.post('/users/update',
                  {_id: $params.uid, updates: $scope.edit})
       .success(function(data) {
@@ -339,6 +341,7 @@ function($scope, $http, shared, $location, session) {
       $scope.message = 'Error: please input a username and password.';
       return;
     }
+    // TODO(jordan): re-route login
     $http.post('/login', $scope.user)
     .success(function(data) {
       session.setUser(data);
@@ -375,6 +378,7 @@ function($scope, $http, shared, $location, session, $timeout) {
         $scope.message = 'Error: please input a desired password.';
         return;
       }
+      // TODO(jordan): registration needs to be re-routed
       $http.post('/register', $scope.user)
       .success(function(data) {
         if(data.error) {
@@ -403,9 +407,10 @@ function($scope, $http, shared, $location, session, $timeout) {
   }
 }]);
 
+// NOTE(jordan): camelCase to Human Readable
 app.filter('camelToHuman', function () {
   return function(input) {
-    // NOTE(jordan): for whatever reason, a handful of people don't have majors (2)
+    // NOTE(jordan): for whatever reason, a handful of people don't have majors (like 2 people)
     return input && input.charAt(0).toUpperCase() + input.slice(1).replace(/[a-z]([A-Z])/g, function(a) { return a.charAt(0) + ' ' + a.slice(1); });
   }
 });
