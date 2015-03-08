@@ -404,6 +404,6 @@ function($scope, $http, shared, $location, session, $timeout) {
 app.filter('camelToHuman', function () {
   return function(input) {
     // NOTE(jordan): for whatever reason, a handful of people don't have majors (2)
-    return input && input.charAt(0).toUpperCase() + input.slice(1).replace(/([A-Z])/g, function(a) { return " " + a; });
+    return input && input.charAt(0).toUpperCase() + input.slice(1).replace(/[a-z]([A-Z])/g, function(a) { return a.charAt(0) + ' ' + a.slice(1); });
   }
 });

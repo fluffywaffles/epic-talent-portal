@@ -2,6 +2,7 @@ var Person = require('../models/Person.js')
   , Editor = require('../models/Editor.js')
   , _ = require('lodash')
   , mongoose = require('mongoose')
+  , path = require('path')
   , request = require('request');
 
 exports.index = function(req, res) {
@@ -70,16 +71,16 @@ function paramifyQuery(q) {
   p.forEach(function(v, idx) { q[idx] = v.replace(/,/g, '|') });
   p = p.join(',');
   console.log(p);
-  return p + (p.length > 0 ? '/' : '');
+  return p;
 }
 
 exports.dbSize = function(req, res) {
 
   var q = paramifyQuery(req.query);
 
-  console.log('http://localhost:3000/scf/applications/' + q + 'count');
+  console.log('http://localhost:3000/' + path.join('scf/applications/' + q, '/count'));
 
-  request.get('http://localhost:3000/scf/applications/' + q + 'count')
+  request.get('http://localhost:3000/' + path.join('scf/applications/' + q, 'count'))
          .pipe(res);
 }
 
@@ -93,9 +94,9 @@ exports.filterTalent = function(req, res) {
   var q = paramifyQuery(req.query);
   console.log(q);
 
-  q = q.concat(['~limit:' + lim,
-                '~skip:'  + offset,
-                '~sort:'  + 'raw.name.last']);
+  q += ',' + ['~limit:' + lim,
+              '~skip:'  + offset,
+              '~sort:'  + 'raw.name.last'].join(',');
 
   console.log('http://localhost:3000/scf/applications/' + q);
 
