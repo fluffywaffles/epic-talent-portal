@@ -6,50 +6,34 @@ include header
 
   div(style='position: fixed; bottom: 0px; left: 0px; padding: 5px 0; background-color: white; z-index: 2; box-shadow: 0px -2px 4px -3px rgba(255,0,0,0.5); width: 100%; text-align: center;', ng-show='loadedApps') Results: {{dbSize}}
 
+  div(ng-show='apps.length == 0').alert.alert-danger.text-center
+    p No results!
   div(ng-repeat='app in (apps | filter:include:filterInclude)')
     //name, year, major, industries, technical, design, business, engineering, linkedin, email, minorAndCerts, international, needsVisa
     .col-xs-12
-      h3.name {{toUpperCase(app.name)}}
+      h3.name {{toUpperCase(app.raw.name.first)}} {{toUpperCase(app.raw.name.last)}}
       h3(ng-show='isAdmin') | {{app._id}}
       button.btn.btn-warning.pull-right(ng-click='editPage(app._id)', ng-show='isAdmin') Edit
     .col-sm-12.col-xs-6
-      .col-sm-4
+      .col-sm-3
         h4 Year
-        p.year {{app.year}}
-      .col-sm-4
+        p.year {{app.raw.year == "other" ? app.raw.yearOtherExplanation : app.raw.year}}
+      .col-sm-3
         h4 Major
-        p.major {{app.major}}
-      .col-sm-4
-        h4 Minor / Certificates
-        p.minor {{!! app.minorAndCerts.toString() ? app.minorAndCerts.join(', ') : "None"}}
-    .col-sm-12.col-xs-6
-      .col-sm-4(ng-show='{{!! app.technical.toString()}}')
-        h4 Technical Skills
-        p.technical {{app.technical.join(', ')}}
-      .col-sm-4(ng-show='{{!! app.design.toString()}}')
-        h4 Design Skills
-        p.design {{app.design.join(', ')}}
-      .col-sm-4(ng-show='{{!! app.business.toString()}}')
-        h4 Business Skills
-        p.business {{app.business.join(', ')}}
+        p.major {{app.raw.major | camelToHuman}}
     .col-sm-12.col-xs-12
-      p.international 
-        strong International student? 
-        {{app.international}}
-      p.needsVisa 
-        strong Requires Visa Sponsorship upon graduation? 
-        {{app.needsVisa}}
+      p.international
+        strong International student?
+        &nbsp;{{app.raw.international ? "Yes" : "No"}}
     .col-sm-12.col-xs-12
       p
-        a(ng-show='{{!!app.linkedin}}', href='//{{app.linkedin}}', target='_blank') LinkedIn Profile
-          &nbsp;&nbsp;&#124;&nbsp;&nbsp;
-        a(href='mailto:{{app.email}}') {{app.email}}
-    .col-xs-12(ng-show='{{!!app.resume}}')
+        a(href='mailto:{{app.raw.email}}') {{app.raw.email}}
+    .col-xs-12(ng-show='{{!!app.raw.resume}}')
       p
         strong Resume
         br
-        a(href='{{app.resume.url}}') {{app.resume.filename}}
+        a(href='{{app.raw.resume.url}}') {{app.raw.resume.filename}}
 
   .buttons(ng-show='loadedApps', style='margin: 20px 0 30px 0').col-xs-12
-    button.btn.btn-primary(ng-click='nextPage()', ng-disabled='apps.length >= dbSize') Load More!
-    button.btn.btn-warning.pull-right(ng-click='loadAll()', ng-disabled='apps.length >= dbSize') Load All (might take some time)
+    button.btn.btn-primary(ng-click='nextPage()', ng-disabled='!apps.length || apps.length >= dbSize') Load More!
+    button.btn.btn-warning.pull-right(ng-click='loadAll()', ng-disabled='!apps.length || apps.length >= dbSize') Load All (might take some time)

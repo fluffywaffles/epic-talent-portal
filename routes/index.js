@@ -1,14 +1,8 @@
-
-/*
- * GET home page.
- */
-
-var fs = require('fs');
-var path = require('path');
-var Person = require('../models/Person.js');
-var Editor = require('../models/Editor.js');
-var _ = require('lodash');
-var mongoose = require('mongoose');
+var Person = require('../models/Person.js')
+  , Editor = require('../models/Editor.js')
+  , _ = require('lodash')
+  , mongoose = require('mongoose')
+  , request = require('request');
 
 exports.index = function(req, res) {
   res.render('index');
@@ -26,20 +20,6 @@ exports.checkLogin = function(req, res) {
 }
 
 exports.importTalent = function(req, res) {
-  var talent = fs.readFileSync(path.join(__dirname, '../raw_csv/student-apps.json'));
-  talent = JSON.parse(talent);
-  _.each(talent, function(val, idx) {
-    _.each(val, function(v, i) {
-      if(v.indexOf(',') !== -1) v = v.split(',').map(function(val, idx) { return val.trim()});
-      val[i] = v;
-    });
-
-    var person = new Person(val);
-    person.save(function(err) {
-      if(err) console.log(err);
-    });
-  });
-
   Editor.register({username: 'tester', startup: true}, 'testme!', function(err) {
     if(err) console.log(err);
   });
@@ -61,55 +41,64 @@ exports.loadTalent = function(req, res) {
 
   if(req.query.noLimit)
     lim = 0;
-  Person.find({}).skip(req.query.offset).limit(lim).sort([['name', 'ascending']]).exec(function(err, peeps) {
-      res.send(peeps);
-    });
+
+  var q = ['~skip:' + req.query.offset,
+           '~limit:' + lim,
+           '~sort:' + 'raw.name.last'].join(',');
+
+  request.get('http://localhost:3000/scf/applications/' + q)
+         .pipe(res);
 };
 
+function prm(k, v) {
+  return ['raw.' + k, v.replace(/:|\s/g, '')].join(':');
+}
+
+function paramifyQuery(q) {
+  var p = [];
+  console.log(q);
+  for (var k in q) {
+    console.log(k);
+    if ( k == 'name' ) {
+      ns = q[k].split(' '), p = p.concat([prm('name.first', ns[0]), prm('name.last', ns[1] || '')]);
+      continue;
+    }
+    console.log(prm(k, q[k]));
+    p.push(prm(k, q[k]));
+  }
+  // NOTE(jordan): transform commas into 'OR'
+  p.forEach(function(v, idx) { q[idx] = v.replace(/,/g, '|') });
+  p = p.join(',');
+  console.log(p);
+  return p + (p.length > 0 ? '/' : '');
+}
+
 exports.dbSize = function(req, res) {
-  if(req.query) {
-    var mc;
-    if(req.query.minorAndCerts) mc =  req.query.minorAndCerts.split(',').join('|');
-    Person.count({
-      name: new RegExp(req.query.name, 'i'),
-      major: new RegExp(req.query.major, 'i'),
-      minorAndCerts: new RegExp(mc, 'i')
-    }, function(err, num) {
-      res.send(num.toString());
-    })
-  }
-  else {
-    Person.count({}, function(err, num) {
-      if(err) console.log(err);
-      //can't send num as a Number because it gets recognized as an HTTP Status Code! Ha! Getting the Status Code 768 is pretty alarming at first.
-      res.send(num.toString());
-    });
-  }
+
+  var q = paramifyQuery(req.query);
+
+  console.log('http://localhost:3000/scf/applications/' + q + 'count');
+
+  request.get('http://localhost:3000/scf/applications/' + q + 'count')
+         .pipe(res);
 }
 
 exports.filterTalent = function(req, res) {
 
   var lim = 25;
-  if(req.query.noLimit) lim = 0;
+  if(req.query.noLimit) lim = 0, delete req.query.offset;
+  var offset = req.query.offset;
+  delete req.query.offset;
 
-  var mc;
-  if(req.query.minorAndCerts) mc =  req.query.minorAndCerts.split(',').join('|');
-
-  var q = {
-    name: new RegExp(req.query.name, 'i'),
-    major: new RegExp(req.query.major, 'i'),
-    minorAndCerts: new RegExp(mc, 'i')
-  };
-
-  if(req.query._id)
-    q._id = mongoose.Types.ObjectId(req.query._id);
-
+  var q = paramifyQuery(req.query);
   console.log(q);
 
-  Person.find(q)
-  .skip(req.query.offset).limit(lim)
-  .exec(function(err, peeps) {
-    if(err) console.log(err);
-    res.send(peeps);
-  });
+  q = q.concat(['~limit:' + lim,
+                '~skip:'  + offset,
+                '~sort:'  + 'raw.name.last']);
+
+  console.log('http://localhost:3000/scf/applications/' + q);
+
+  request.get('http://localhost:3000/scf/applications/' + q)
+         .pipe(res);
 }

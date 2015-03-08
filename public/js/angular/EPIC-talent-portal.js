@@ -89,10 +89,11 @@ app.service('shared', ["Talent", function(Talent) {
     return queryArr.join('&');
   };
 
-  this.filterInclude = function(actual, expected) {
-    if(expected) return actual === 'No';
-    return actual;
+  this.filterInclude = function(app, exclude) {
+    if(exclude.international) return !app.international;
+    return true;
   };
+
 
   this.nextPage = function(next) {
     return function() {
@@ -152,11 +153,11 @@ app.service('session', ['$http', function($http) {
     $http.get('/checkLogin')
     .success(function(userData) {
       self.setUser(userData);
-      cb();
+      cb && cb();
     })
     .error(function() {
       console.log('not logged in; sorry');
-      cb();
+      cb && cb();
     })
   }
 }]);
@@ -165,15 +166,12 @@ app.controller('applicantList',
                ["$scope", "Talent", "shared", "$location", 'session',
 function($scope, Talent, shared, $location, session) {
 
-  console.log(Talent);
 
   Talent.prevQuery = '';
 
   session.checkLogin(function () {
 
     var u = session.getUser();
-
-    console.log(u);
 
     if(! u) {
       $location.path('login');
@@ -236,7 +234,6 @@ function($scope, Talent, shared, $location, session) {
       $scope.toUpperCase = shared.toUpperCase;
 
       shared.dbSize(function(data) {
-        console.log(data);
         $scope.dbSize = data;
       });
 
@@ -244,8 +241,7 @@ function($scope, Talent, shared, $location, session) {
         if(!$.isEmptyObject(searchObj)) {
           Talent.sizeQuery(shared.queryStringify(searchObj), function(data) {
             if(data !== 'no change') {
-              console.log(data);
-              $scope.dbSize = data;
+              $scope.dbSize = data.length > 0 ? data : 'No results!';
               shared.query(searchObj, function(data) {
                 $scope.apps = data;
               });
@@ -341,10 +337,8 @@ function($scope, $http, shared, $location, session) {
       $scope.message = 'Error: please input a username and password.';
       return;
     }
-    console.log($scope.user);
     $http.post('/login', $scope.user)
     .success(function(data) {
-      console.log(data);
       session.setUser(data);
       var u = session.getUser();
       $location.path('list');
@@ -404,3 +398,10 @@ function($scope, $http, shared, $location, session, $timeout) {
     };
   }
 }]);
+
+app.filter('camelToHuman', function () {
+  return function(input) {
+    // NOTE(jordan): for whatever reason, a handful of people don't have majors (2)
+    return input && input.charAt(0).toUpperCase() + input.slice(1).replace(/([A-Z])/g, function(a) { return " " + a; });
+  }
+});

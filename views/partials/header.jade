@@ -3,21 +3,21 @@ header.col-xs-12.col-sm-3
   h2.text-center Startup Career Fair
   hr
   h2.text-center Talent Portal
-  p.text-center.bg-success(ng-show='isAdmin') 
+  p.text-center.bg-success(ng-show='isAdmin')
     | admin mode!
   .top-fix(ng-hide='edit')
+    p.text-center.alert.alert-info
+      | You can use&nbsp;
+      a(href='http://www.wikiwand.com/en/Regular_expression', target='_blank') regex
+      |!
     .form-group(ng-init='search = {}')
       label.control-label(for='nameFilter') Name
-      input.form-control(ng-model='search.name', type='text', placeholder='filter...', id='nameFilter')
+      input.form-control(ng-model='search.name', type='text', placeholder='e.g; Andrew, A|B|C', id='nameFilter')
       br
       label.control-label(for='majorFilter') Major
-      input.form-group.form-control(ng-model='search.major', type='text', placeholder='filter...', id='majorFilter')
+      input.form-group.form-control(ng-model='search.major', type='text', placeholder='e.g.; CS|Comp, MBA|Econ', id='majorFilter')
       br
-      label.control-label(for='minorFilter') Minor
-      input.form-group.form-control(ng-model='search.minorAndCerts', type='text', placeholder='e.g.; EE, economics', id='minorFilter')
-      br
-      input(ng-model='include.international', type='checkbox', checked, id='internationalFilter')
+      label.control-label(for='yearFilter') Year
+      input.form-group.form-control(ng-model='search.year', type='text', placeholder='e.g; grad, junior|senior')
+      input(ng-model='include.raw.international', type='checkbox', checked, id='internationalFilter')
       label.control-label(for='internationalFilter') &nbsp;Exclude international students?
-      br
-      input(ng-model='include.needsVisa', type='checkbox', checked, id='visaFilter')
-      label.control-label(for='visaFilter') &nbsp;Exclude students requiring visa sponsorship?

@@ -12,11 +12,11 @@
     "load-grunt-tasks": "~0.2.1",
     "lodash": "~2.4.1",
     "mongoose": "~3.8.8",
-    "request": "~2.27.0",
-    "time-grunt": "~0.1.2",
-    "passport-local-mongoose": "~0.3.0",
+    "node-mailer": "~0.1.1",
     "passport": "~0.2.0",
-    "node-mailer": "~0.1.1"
+    "passport-local-mongoose": "~0.3.0",
+    "request": "^2.27.0",
+    "time-grunt": "~0.1.2"
   },
   "devDependencies": {},
   "scripts": {
