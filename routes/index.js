@@ -35,26 +35,25 @@ exports.loadTalent = function(req, res) {
          .pipe(res);
 };
 
-function prm(k, v) {
-  return ['raw.' + k, v.replace(/:|\s/g, '')].join(':');
-}
-
 function paramifyQuery(q) {
+
+  function prm(k, v) {
+    return ['raw.' + k, v.replace(/:|\s/g, '')].join(':');
+  }
+
   var p = [];
-  console.log(q);
+
   for (var k in q) {
-    console.log(k);
     if ( k == 'name' ) {
       ns = q[k].split(' '), p = p.concat([prm('name.first', ns[0]), prm('name.last', ns[1] || '')]);
       continue;
     }
-    console.log(prm(k, q[k]));
     p.push(prm(k, q[k]));
   }
+
   // NOTE(jordan): transform commas into 'OR'
   p.forEach(function(v, idx) { q[idx] = v.replace(/,/g, '|') });
   p = p.join(',');
-  console.log(p);
   return p;
 }
 
