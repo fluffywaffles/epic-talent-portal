@@ -20,22 +20,6 @@ exports.checkLogin = function(req, res) {
   else res.status(401).send('Not logged in.');
 }
 
-exports.importTalent = function(req, res) {
-  Editor.register({username: 'tester', startup: true}, 'testme!', function(err) {
-    if(err) console.log(err);
-  });
-
-  Person.findOne({name: 'jordan timmerman'}).exec(function(err, jordan) {
-    console.log(jordan);
-    Editor.register({username: 'jtim-admin', isAdmin: true, profileId: jordan._id}, 'br0,lemme1n', function(err) {
-      if(err) console.log(err);
-    });
-    Editor.register({username: 'jtim@u.northwestern.edu', profileId: jordan._id}, 'br0,s3r1ously', function(err) {
-      if(err) console.log(err);
-    });
-  });
-};
-
 exports.loadTalent = function(req, res) {
   if(!req.isAuthenticated()) res.status(401).send('Sorry, you are not authorized to go there.');
   var lim = 25;
