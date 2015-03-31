@@ -26,7 +26,7 @@ include header
         p.major {{app.raw.major | camelToHuman}}
       .col-xs-4
         h4 Seeking
-        p {{ app.raw.seeking.fulltime && app.raw.seeking.internship ? 'Fulltime and/or Internship' : app.seeking.fulltime ? 'Fulltime' : 'Internship' }}
+        p {{ app.raw.seeking.fulltime && app.raw.seeking.internship ? 'Fulltime and/or Internship' : app.raw.seeking.fulltime ? 'Fulltime' : 'Internship' }}
     .col-sm-12.col-md-6
       p.international
         strong International student?
