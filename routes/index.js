@@ -79,7 +79,7 @@ exports.filterTalent = function(req, res) {
 
   console.log(req.query);
   var q = _.extend({}, req.query);
-  var q = paramifyQuery(q);
+  var q = paramifyQuery(req.query);
   console.log(q);
 
   q += ',' + ['~limit:' + lim,
