@@ -76,6 +76,7 @@ exports.filterTalent = function(req, res) {
   var offset = req.query.offset;
   delete req.query.offset;
 
+  console.log(req.query);
   var q = paramifyQuery(req.query);
   console.log(q);
 
