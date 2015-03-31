@@ -39,6 +39,8 @@ exports.loadTalent = function(req, res) {
 
 function paramifyQuery(q) {
 
+  console.log('paramifyQ', q);
+
   function prm(k, v) {
     console.log('prm', k, v);
     return ['raw.' + k, v.replace(/:|\s/g, '')].join(':');
@@ -47,7 +49,7 @@ function paramifyQuery(q) {
   var p = [];
 
   for (var k in q) {
-    console.log(q);
+    console.log('paramifyQ', k);
     if ( typeof k !== typeof [] ) continue;
     if ( k == 'name' ) {
       ns = q[k].split(' '), p = p.concat([prm('name.first', ns[0]), prm('name.last', ns[1] || '')]);
@@ -77,7 +79,6 @@ exports.filterTalent = function(req, res) {
   var offset = req.query.offset;
   delete req.query.offset;
 
-  console.log(req.query);
   var query = _.extend({}, req.query);
   console.log(query);
   var q = paramifyQuery(query);
