@@ -8,22 +8,25 @@ include header
 
   div(ng-show='apps.length == 0').alert.alert-danger.text-center
     p No results!
-  div(ng-repeat='app in (apps | filter:include:filterInclude)')
+  div(ng-repeat='app in (apps | filter:exclude:filterInclude)')
     //name, year, major, industries, technical, design, business, engineering, linkedin, email, minorAndCerts, international, needsVisa
     .col-xs-12
       h3.name {{toUpperCase(app.raw.name.first)}} {{toUpperCase(app.raw.name.last)}}
         small &nbsp;&nbsp;
-          a(href='mailto:{{app.raw.email}}'){{app.raw.email}}
-      h3(ng-show='isAdmin') | {{app._id}}
+          a(href='mailto:{{app.raw.email}}') {{app.raw.email}}
+      h3(ng-show='isAdmin') {{app._id}}
       hr
-      button.btn.btn-warning.pull-right(ng-click='editPage(app._id)', ng-show='isAdmin') Edit
+      button.btn.btn-warning(ng-click='editPage(app.email)', ng-show='isAdmin') Edit
     .col-xs-12.col-md-6
-      .col-xs-6
+      .col-xs-4
         h4 Year
         p.year {{app.raw.year == "other" ? app.raw.yearOtherExplanation : app.raw.year}}
-      .col-xs-6
+      .col-xs-4
         h4 Major
         p.major {{app.raw.major | camelToHuman}}
+      .col-xs-4
+        h4 Seeking
+        p {{ app.raw.seeking.fulltime && app.raw.seeking.internship ? 'Fulltime and/or Internship' : app.seeking.fulltime ? 'Fulltime' : 'Internship' }}
     .col-xs-12.col-sm-6
       p.international
         strong International student?

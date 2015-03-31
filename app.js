@@ -49,7 +49,6 @@ passport.deserializeUser(Editor.deserializeUser());
 // for local to work, mongod (mongodaemon) must be running on port 27017
 var uristring =
   process.env.MONGOLAB_URI ||
-  process.env.MONGOHQ_URL  ||
   'mongodb://localhost/talentPool';
 
 mongoose.connect(uristring, function(err, res) {

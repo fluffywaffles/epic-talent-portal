@@ -7,35 +7,34 @@ include header
 
   p.bg-success.text-center(ng-show='!!message') {{message}}
   .col-xs-12
-      h3.name {{app.name ? toUpperCase(app.name) : ''}}
-      p
-      | email: {{app.email}}
+    h3.name {{app.raw.gender.startsWith('f') ? '♀' : '♂' }}
+      | {{ toUpperCase(app.raw.name.first) }} {{ toUpperCase(app.raw.name.last) }}
+      | (<a href='mailto:{{app.raw.email}}'>{{app.raw.email}}</a>)
     .col-sm-12.col-xs-6
       .col-sm-4
         h4 Year
-        p.year {{app.year}}
+        p.year {{app.raw.year == 'other' ? app.raw.yearOtherExplanation : app.raw.year}}
       .col-sm-4
         h4 Major
-        p.major {{app.major}}
+        p.major {{app.raw.major}}
+      .col-sm-4
+        h4 Seeking
+        p {{ app.raw.seeking.fulltime && app.raw.seeking.internship ? 'Fulltime and/or Internship' : app.seeking.fulltime ? 'Fulltime' : 'Internship' }}
     .col-sm-12.col-xs-6(ng-show='isAdmin')
       .col-sm-4
-        input(type='text', ng-model='edit.year')
+        input(type='text', ng-model='edit.raw.year')
       .col-sm-4
-        input(type='text', ng-model='edit.major')
+        input(type='text', ng-model='edit.raw.major')
     .col-sm-12.col-xs-12
       p.international
         strong International student?
         {{app.international}}
-        input(type='checkbox', ng-model='edit.international', ng-show='isAdmin')
-      p.needsVisa
-        strong Requires Visa Sponsorship upon graduation?
-        {{app.needsVisa}}
-        input(type='checkbox', ng-model='edit.needsVisa', ng-show='isAdmin')
+        input(type='checkbox', ng-model='edit.raw.international', ng-show='isAdmin')
     .col-xs-12(ng-init='uploadedDoc = {}')
       p
         strong Resume
         br
-        a(href='{{app.resume.url || uploadedDoc.url || "javascript:void(0)"}}') {{app.resume.filename || uploadedDoc.filename || 'None'}}
+        a(href='{{uploadedDoc.url || app.raw.resume.url || "javascript:void(0)"}}') {{uploadedDoc.filename || app.raw.resume.filename || 'None'}}
       button.btn.btn-success.btn-block(ng-click='pickFile()') Upload Resume
     .col-xs-12
       br

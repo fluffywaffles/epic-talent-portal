@@ -6,7 +6,8 @@ var editor = new Schema({
   isAdmin: {type: Boolean, required: true, default: false},
   startup: {type: Boolean, required: true, default: false},
   lovesPie: {type: Boolean, required: true, default: true},
-  profileId: String
+  profileId: String,
+  email: String
 });
 
 editor.plugin(passportLocalMongoose);

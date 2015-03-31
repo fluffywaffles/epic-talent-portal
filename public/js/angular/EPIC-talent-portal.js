@@ -3,7 +3,7 @@ function router($routeProvider) {
     templateUrl: '/partials/login',
     controller: 'login'
   });
-  $routeProvider.when('/edit/:uid', {
+  $routeProvider.when('/edit/:email', {
     templateUrl: '/partials/edit',
     controller: 'edit'
   });
@@ -94,7 +94,6 @@ app.service('shared', ["Talent", function(Talent) {
     return true;
   };
 
-
   this.nextPage = function(next) {
     return function() {
       Talent.next(function(data) {
@@ -113,7 +112,7 @@ app.service('shared', ["Talent", function(Talent) {
   };
 
   this.toUpperCase = function(str) {
-    return str.replace(/\w\S*/g,
+    return str && str.replace(/\w\S*/g,
       function(txt){
         return txt.charAt(0).toUpperCase() +
         txt.substr(1).toLowerCase();});
@@ -262,61 +261,68 @@ app.controller('edit', ["$scope", "Talent", "shared", "$http", "$routeParams", "
   $scope.app = {};
   $scope.edit = {};
 
-  var u = session.getUser();
+  session.checkLogin(function() {
+    var u = session.getUser();
 
-  console.log(u);
+    console.log(u);
 
-  if(! (u && u.profileId)) {
-    $location.path('login');
-    return;
-  }
-
-  $scope.isAdmin = u.isAdmin;
-
-  filepicker.setKey('AdPx67v2iQvSqF5yb82VUz');
-
-  $scope.pickFile = function() {
-    filepicker.pick({
-      mimetypes: ['text/plain', 'text/richtext', 'application/pdf', 'text/pdf'],
-      container: 'modal',
-      services:['COMPUTER', 'GMAIL', 'BOX', 'DROPBOX', 'GOOGLE_DRIVE', 'SKYDRIVE'],
-    },
-    function(InkBlob){
-      $scope.$apply(function() {
-        $scope.edit.resume = InkBlob;
-        $scope.uploadedDoc = InkBlob;
-      });
-      console.log(JSON.stringify(InkBlob));
-    },
-    function(FPError){
-      console.log(FPError.toString());
-    });
-  };
-
-  $scope.toUpperCase = shared.toUpperCase;
-
-  // TODO(jordan): query no longer means Person.find, so this needs updating
-  shared.query({_id: $params.uid}, function(data) {
-    $scope.app = data[0];
-    $scope.edit = angular.copy($scope.app);
-    delete $scope.edit._id;
-  });
-
-  $scope.saveEdits = function() {
-    if(u.profileId === $params.uid || u.isAdmin) {
-      // TODO(jordan): this route will change too
-      $http.post('/users/update',
-                 {_id: $params.uid, updates: $scope.edit})
-      .success(function(data) {
-        console.log(data);
-        $scope.app = $.extend($scope.app, data);
-        $scope.message = 'Changes saved.';
-      })
-      .error(function(err) {
-        console.log(err);
-      });
+    if(! (u)) {
+      $location.path('login');
+      return;
     }
-  }
+
+    // -- filepicker setup
+    // API key for resume_portal
+    filepicker.setKey('AVRqlhXowRme6yNY2qmrdz');
+    $scope.pickFile = function() {
+      filepicker.pick({
+        mimetypes: ['text/plain',
+                    'text/richtext',
+                    'application/pdf',
+                    'text/pdf'],
+        container: 'modal',
+        services: ['COMPUTER', 'GMAIL', 'BOX'
+                   , 'DROPBOX', 'GOOGLE_DRIVE'
+                   , 'SKYDRIVE', 'EVERNOTE'
+                   , 'CLOUDDRIVE']
+      },
+      function(InkBlob) {
+        $scope.$apply(function() {
+          // update $scope inside $apply
+          $scope.uploadedDoc = InkBlob;
+          $scope.edit.raw.resume = InkBlob;
+        });
+      },
+      function(PFError) {
+        console.log(PFError.toString());
+      });
+    };
+
+    $scope.isAdmin = u.isAdmin;
+
+    $scope.toUpperCase = shared.toUpperCase;
+
+    shared.query({email: $params.email}, function(data) {
+      $scope.app = data[0];
+      $scope.edit = angular.copy($scope.app);
+      delete $scope.edit._id;
+    });
+
+    $scope.saveEdits = function() {
+      if(u.email === $params.email || u.isAdmin) {
+        $http.post('/users/update',
+                   {email: $params.email, updates: $scope.edit})
+        .success(function(data) {
+          console.log(data);
+          $scope.app = $.extend($scope.app, data);
+          $scope.message = 'Changes saved.';
+        })
+        .error(function(err) {
+          console.log(err);
+        });
+      }
+    }
+  });
 
 }]);
 
@@ -327,35 +333,36 @@ function($scope, $http, shared, $location, session) {
     ? $scope.message = 'Successfully logged out.'
     : $scope.message = '';
 
-  session.checkLogin();
+  session.checkLogin(function() {
 
-  var u = session.getUser();
+    var u = session.getUser();
 
-  if (u) {
-    $location.url($location.path('list'));
-  }
-
-  $scope.submit = function() {
-    $scope.message = 'Logging you in...';
-    if (! ($scope.user.username && $scope.user.password)) {
-      $scope.message = 'Error: please input a username and password.';
-      return;
+    if (u) {
+      $location.url('list');
     }
-    // TODO(jordan): re-route login
-    $http.post('/login', $scope.user)
-    .success(function(data) {
-      session.setUser(data);
-      var u = session.getUser();
-      if(u.startup)
-        $location.url('list');
-      else
-        $location.url('edit/' + u.profileId);
-    })
-    .error(function(error) {
-      console.log(error);
-      $scope.message = 'Error: Invalid user or password.';
-    });
-  };
+
+    $scope.submit = function() {
+      $scope.message = 'Logging you in...';
+      if (! ($scope.user.username && $scope.user.password)) {
+        $scope.message = 'Error: please input a username and password.';
+        return;
+      }
+      // TODO(jordan): re-route login
+      $http.post('/login', $scope.user)
+      .success(function(data) {
+        session.setUser(data);
+        var u = session.getUser();
+        if(u.startup)
+          $location.url('list');
+        else
+          $location.url('edit/' + u.email);
+      })
+      .error(function(error) {
+        console.log(error);
+        $scope.message = 'Error: Invalid user or password.';
+      });
+    };
+  });
 }]);
 
 app.controller('register', ["$scope", "$http", "shared", "$location", "session", "$timeout",
@@ -369,6 +376,7 @@ function($scope, $http, shared, $location, session, $timeout) {
 
   else {
     $scope.user.username = $scope.req.email;
+    $scope.user.email   = $scope.req.email;
     $scope.user.special = $scope.req.special;
     $scope.user.startup = $scope.req.startup;
 
@@ -383,19 +391,18 @@ function($scope, $http, shared, $location, session, $timeout) {
       .success(function(data) {
         if(data.error) {
           $scope.message = data.error;
-          if(data.error.message.indexOf("User already exists with name")===0) {
+          if(data.error.message.indexOf("User already exists with name") === 0) {
             $scope.message = "Just a moment: redirecting you to log in; you are already registered...";
-            $timeout(function() {$location.path('login');}, 2500);
+            $timeout(function() {$location.url('login');}, 2500);
           }
         } else {
           session.setUser(data);
           var u = session.getUser();
-          console.log(session);
           if(u.startup) {
             $location.url('list');
           }
           else {
-            $location.url('edit/'+u.profileId);
+            $location.url('edit/'+u.email);
           }
         }
       })
@@ -410,7 +417,7 @@ function($scope, $http, shared, $location, session, $timeout) {
 // NOTE(jordan): camelCase to Human Readable
 app.filter('camelToHuman', function () {
   return function(input) {
-    // NOTE(jordan): for whatever reason, a handful of people don't have majors (like 2 people)
+    // NOTE(jordan): for whatever reason, a handful of people don't have majors (like 2 people), so guard against falsy
     return input && input.charAt(0).toUpperCase() + input.slice(1).replace(/[a-z]([A-Z])/g, function(a) { return a.charAt(0) + ' ' + a.slice(1); });
   }
 });

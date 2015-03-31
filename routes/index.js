@@ -1,8 +1,8 @@
-var Person = require('../models/Person.js')
-  , Editor = require('../models/Editor.js')
+var Editor = require('../models/Editor.js')
   , _ = require('lodash')
   , mongoose = require('mongoose')
   , path = require('path')
+  , qq   = require('../lib/query.js')
   , request = require('request');
 
 exports.index = function(req, res) {
@@ -10,13 +10,15 @@ exports.index = function(req, res) {
 };
 
 exports.login = function(req, res) {
-  if(req.isAuthenticated()) res.send(_.pick(req.user, ['profileId', 'isAdmin', 'startup']));
+  console.log(req.user);
+  console.log(_.pick(req.user, 'email', 'isAdmin', 'startup'));
+  if(req.isAuthenticated()) res.send(_.pick(req.user, 'email', 'isAdmin', 'startup'));
   else res.status(401).send('Login failed.');
 }
 
 exports.checkLogin = function(req, res) {
   console.log('CheckLogin', req.isAuthenticated());
-  if(req.isAuthenticated()) res.send(_.pick(req.user, ['profileId', 'isAdmin', 'startup']));
+  if(req.isAuthenticated()) res.send(_.pick(req.user, ['email', 'isAdmin', 'startup']));
   else res.status(401).send('Not logged in.');
 }
 
@@ -31,7 +33,7 @@ exports.loadTalent = function(req, res) {
            '~limit:' + lim,
            '~sort:' + 'raw.name.last'].join(',');
 
-  request.get('http://localhost:3000/scf/applications/' + q)
+  qq.applications.query(q)
          .pipe(res);
 };
 
@@ -63,7 +65,7 @@ exports.dbSize = function(req, res) {
 
   console.log('http://localhost:3000/' + path.join('scf/applications/' + q, '/count'));
 
-  request.get('http://localhost:3000/' + path.join('scf/applications/' + q, 'count'))
+  qq.applications.query(path.join(q, 'count'))
          .pipe(res);
 }
 
@@ -83,6 +85,6 @@ exports.filterTalent = function(req, res) {
 
   console.log('http://localhost:3000/scf/applications/' + q);
 
-  request.get('http://localhost:3000/scf/applications/' + q)
+  qq.applications.query(q)
          .pipe(res);
 }

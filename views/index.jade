@@ -18,6 +18,9 @@ html(lang='en', ng-app='EPIC-talent-portal')
 
     if(req)
       ng-view(ng-init='req = #{req};')
+    else if (err)
+      h1 Error
+      h2 #{err}
     else
       ng-view
 

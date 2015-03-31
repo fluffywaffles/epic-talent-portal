@@ -6,10 +6,9 @@ header.col-xs-12.col-sm-4.col-md-3
   p.text-center.bg-success(ng-show='isAdmin')
     | admin mode!
   .top-fix(ng-hide='edit')
-    p.text-center.alert.alert-info
-      | You can use&nbsp;
-      a(href='http://www.wikiwand.com/en/Regular_expression', target='_blank') regex
-      |!
+    p.text-center.alert.alert-success
+      | This search supports&nbsp;
+      a(href='http://www.wikiwand.com/en/Regular_expression', target='_blank') regular expressions
     .form-group(ng-init='search = {}')
       label.control-label(for='nameFilter') Name
       input.form-control(ng-model='search.name', type='text', placeholder='e.g; Andrew, A|B|C', id='nameFilter')
@@ -19,5 +18,5 @@ header.col-xs-12.col-sm-4.col-md-3
       br
       label.control-label(for='yearFilter') Year
       input.form-group.form-control(ng-model='search.year', type='text', placeholder='e.g; grad, junior|senior')
-      input(ng-model='include.raw.international', type='checkbox', checked, id='internationalFilter')
+      input(ng-model='exclude.raw.international', type='checkbox', id='internationalFilter')
       label.control-label(for='internationalFilter') &nbsp;Exclude international students?
