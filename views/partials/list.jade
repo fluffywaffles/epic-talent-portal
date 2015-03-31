@@ -16,7 +16,7 @@ include header
           a(href='mailto:{{app.raw.email}}') {{app.raw.email}}
       h3(ng-show='isAdmin') {{app._id}}
       hr
-      button.btn.btn-warning(ng-click='editPage(app.email)', ng-show='isAdmin') Edit
+      button.btn.btn-warning(ng-click='editPage(app.raw.email)', ng-show='isAdmin') Edit
     .col-xs-12.col-md-6
       .col-xs-4
         h4 Year

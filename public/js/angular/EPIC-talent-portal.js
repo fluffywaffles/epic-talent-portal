@@ -178,7 +178,7 @@ function($scope, Talent, shared, $location, session) {
     }
     if (! (u.isAdmin || u.startup)) {
       alert("Forbidden.");
-      $location.path('edit/'+u.profileId);
+      $location.path('edit/'+u.email);
       return;
     }
 
