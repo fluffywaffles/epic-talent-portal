@@ -28,7 +28,7 @@ exports.getSet = function(req, res) {
       console.log(body);
       var parsed = JSON.parse(body)[0];
       if (!parsed) res.render('index', {err: 'No user found.'});
-      if (parsed.raw.email !== params.email) res.render('index', {err: 'Incorrect user data. Cannot register.'});
+      else if (parsed.raw.email !== params.email) res.render('index', {err: 'Incorrect user data. Cannot register.'});
       else res.render('index', { req: JSON.stringify(params) });
     })
   }
