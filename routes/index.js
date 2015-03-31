@@ -40,6 +40,7 @@ exports.loadTalent = function(req, res) {
 function paramifyQuery(q) {
 
   function prm(k, v) {
+    console.log('prm', k, v);
     return ['raw.' + k, v.replace(/:|\s/g, '')].join(':');
   }
 
@@ -63,8 +64,6 @@ exports.dbSize = function(req, res) {
 
   var q = paramifyQuery(req.query);
 
-  console.log('http://localhost:3000/' + path.join('scf/applications/' + q, '/count'));
-
   qq.applications.query(path.join(q, 'count'))
          .pipe(res);
 }
@@ -82,8 +81,6 @@ exports.filterTalent = function(req, res) {
   q += ',' + ['~limit:' + lim,
               '~skip:'  + offset,
               '~sort:'  + 'raw.name.last'].join(',');
-
-  console.log('http://localhost:3000/scf/applications/' + q);
 
   qq.applications.query(q)
          .pipe(res);

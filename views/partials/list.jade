@@ -27,11 +27,11 @@ include header
       .col-xs-4
         h4 Seeking
         p {{ app.raw.seeking.fulltime && app.raw.seeking.internship ? 'Fulltime and/or Internship' : app.seeking.fulltime ? 'Fulltime' : 'Internship' }}
-    .col-xs-12.col-sm-6
+    .col-sm-12.col-md-6
       p.international
         strong International student?
         &nbsp;{{app.raw.international ? "Yes" : "No"}}
-    .col-xs-12.col-sm-6(ng-show='{{!!app.raw.resume}}')
+    .col-sm-12.col-md-6(ng-show='{{!!app.raw.resume}}')
       p
         strong Resume
         br
