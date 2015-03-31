@@ -47,6 +47,7 @@ function paramifyQuery(q) {
   var p = [];
 
   for (var k in q) {
+    console.log(q);
     if ( ! q.hasOwnProperty(k)) continue;
     if ( k == 'name' ) {
       ns = q[k].split(' '), p = p.concat([prm('name.first', ns[0]), prm('name.last', ns[1] || '')]);
