@@ -65,7 +65,7 @@ function paramifyQuery(q) {
 
 exports.dbSize = function(req, res) {
 
-  var q = paramifyQuery(req.query);
+  var q = paramifyQuery(_.extend({}, req.query));
 
   qq.applications.query(path.join(q, 'count'))
          .pipe(res);
