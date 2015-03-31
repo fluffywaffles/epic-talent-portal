@@ -338,7 +338,8 @@ function($scope, $http, shared, $location, session) {
     var u = session.getUser();
 
     if (u) {
-      $location.url('list');
+      if (u.startup) $location.url('list');
+      else $location.url('edit/' + u.email);
     }
 
     $scope.submit = function() {
