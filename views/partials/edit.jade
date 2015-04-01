@@ -19,7 +19,7 @@ include header
         p.major {{app.raw.major}}
       .col-sm-4
         h4 Seeking
-        p {{ app.raw.seeking.fulltime && app.raw.seeking.internship ? 'Fulltime and/or Internship' : app.seeking.fulltime ? 'Fulltime' : 'Internship' }}
+        p {{ app.raw.seeking.fulltime && app.raw.seeking.internship ? 'Fulltime and/or Internship' : app.raw.seeking.fulltime ? 'Fulltime' : 'Internship' }}
     .col-sm-12.col-xs-6(ng-show='isAdmin')
       .col-sm-4
         input(type='text', ng-model='edit.raw.year')
